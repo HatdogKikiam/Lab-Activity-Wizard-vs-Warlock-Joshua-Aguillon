@@ -1,82 +1,123 @@
+/**
+ * Base class for RPG characters with encapsulation and validation.
+ */
 public class Character {
-    public String characterName = "Gandalf";
-    public int level = 0;
-    public int healthPoints = 100;
-    public int manaPoints = 200;
+    private String characterName;
+    private int level;
+    private int healthPoints;
+    private int manaPoints;
+    private static final int MAX_HP = 100;
+    private static final int MAX_MANA = 200;
 
-    /**
-     * Create two Constructors
-     * 1 - Non Parameterized Constructor
-     * 2 - Parameterized Constructor Initializing healthPoints, level, CharacterName and mana
-     */
-    Character(String name){
+    // Default constructor
+    public Character() {
+        this.characterName = "Unnamed";
+        this.level = 0;
+        this.healthPoints = MAX_HP;
+        this.manaPoints = MAX_MANA;
+    }
+
+    // 1-arg constructor
+    public Character(String name) {
         this.characterName = name;
-
+        this.level = 0;
+        this.healthPoints = MAX_HP;
+        this.manaPoints = MAX_MANA;
     }
-    Character(String name, int level, int HP, int manaP){
+
+    // Full parameterized constructor
+    public Character(String name, int level, int hp, int mana) {
         this.characterName = name;
-        this.level = level;
-        this.healthPoints = HP;
-        this.manaPoints = manaP;
+        this.level = Math.max(0, level);
+        this.healthPoints = Math.min(Math.max(0, hp), MAX_HP);
+        this.manaPoints = Math.min(Math.max(0, mana), MAX_MANA);
+    }
 
+    // Getters
+    public String getCharacterName() { return characterName; }
+    public int getLevel() { return level; }
+    public int getHealthPoints() { return healthPoints; }
+    public int getManaPoints() { return manaPoints; }
+
+    // Setters with validation
+    public void setHealthPoints(int hp) {
+        this.healthPoints = Math.min(Math.max(0, hp), MAX_HP);
+    }
+    public void setManaPoints(int mana) {
+        this.manaPoints = Math.min(Math.max(0, mana), MAX_MANA);
     }
 
     /**
-     * Create a Method that displays the Name of the Character
-     * eg. "Character Initialized : Gandalf"
+     * Increase level.
      */
-
-    public void displayCharName(){
-        System.out.println("Character Initialized : " + this.characterName);
-    }
-
-    public void addHealth_Mana(){
-        this.healthPoints += 20;
-        this.manaPoints += 20;
-    }
-
-
-    public void displayStatus(){
-
-        System.out.println("\nCharacter Name: " + this.characterName);
-        System.out.println("Level: " + this.level);
-        System.out.println("Health Points: " + this.healthPoints);
-        System.out.println("Mana Points: " + this.manaPoints);
-
-        System.out.println("\n----------------------------");
-    
+    public void levelUp(int levels) {
+        this.level += Math.max(0, levels);
+        System.out.println(characterName + " leveled up by " + levels + " levels! New level: " + this.level);
     }
 
     /**
-     * Create a method to Damage Target Character
+     * Recover HP and Mana (no mana cost).
      */
-    public void damageTarget(Character enemyCharacter,int damagePoints, int ManaPoints){
-        /**
-         * Deduct health points from enemy character
-         */
-        enemyCharacter.healthPoints -= damagePoints;
-        System.out.println("Enemy character HP Left = " + enemyCharacter.healthPoints);
-        this.manaPoints -= ManaPoints;
-
-        /**
-         * Prompt Character is defeated if HP falls below 0
-         * eg. Character Shaman defeated.
-         */
-        
-         if (enemyCharacter.healthPoints <= 0){
-            System.out.println("\n----------------------------");
-            System.out.println("Opponent Character has been defeated!!");
-            System.out.println("Battle is ENDED.\n");
-            System.out.println(this.characterName + " leveled up!");
-            this.level += 10;
-            
-
+    public void recover(int hpGain, int manaGain) {
+        if (!isAlive()) {
+            System.out.println(characterName + " is defeated and cannot recover.");
+            return;
         }
-    
+        setHealthPoints(healthPoints + hpGain);
+        setManaPoints(manaPoints + manaGain);
+        System.out.println(characterName + " recovered +" + hpGain + " HP and +" + manaGain + " Mana.");
     }
 
+    /**
+     * Check if alive.
+     */
+    public boolean isAlive() {
+        return healthPoints > 0;
+    }
 
-    
-    
+    /**
+     * Damage target if possible.
+     * @return true if damage applied
+     */
+    public boolean damageTarget(Character target, int damagePoints, int manaCost) {
+        if (!isAlive()) {
+            System.out.println(characterName + " is defeated and cannot attack.");
+            return false;
+        }
+        if (manaPoints < manaCost) {
+            System.out.println(characterName + " insufficient mana (" + manaPoints + "/" + manaCost + ").");
+            return false;
+        }
+        if (!target.isAlive()) {
+            System.out.println("Target " + target.getCharacterName() + " is already defeated.");
+            return false;
+        }
 
+        System.out.println(characterName + " deals " + damagePoints + " damage to " + target.getCharacterName() + ".");
+        target.setHealthPoints(target.getHealthPoints() - damagePoints);
+        setManaPoints(manaPoints - manaCost);
+
+        if (!target.isAlive()) {
+            System.out.println("\n*** " + target.getCharacterName() + " has been defeated! ***");
+        }
+        return true;
+    }
+
+    /**
+     * Display status.
+     */
+    public void displayStatus() {
+        System.out.println("\n=== " + characterName + " Status ===");
+        System.out.println("Level: " + level);
+        System.out.println("HP: " + healthPoints + "/" + MAX_HP + (isAlive() ? "" : " (DEFEATED)"));
+        System.out.println("Mana: " + manaPoints + "/" + MAX_MANA);
+        System.out.println("========================\n");
+    }
+
+    /**
+     * Introduce character.
+     */
+    public void introduce() {
+        System.out.println("Character initialized: " + characterName);
+    }
 }

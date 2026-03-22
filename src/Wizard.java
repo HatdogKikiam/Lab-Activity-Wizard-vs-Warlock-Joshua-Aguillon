@@ -1,28 +1,27 @@
-public class Wizard extends Character{
-    Wizard(String name){
+/**
+ * Wizard subclass with fire-based spells.
+ */
+public class Wizard extends Character {
+
+    public Wizard(String name) {
         super(name);
     }
 
-    //Attacking Skills
-    public void fireStorm(Character enemyCharacter){
-        System.out.println(super.characterName + " attacks " + enemyCharacter.characterName + " with Firestorm (Damage - 60)");
-        int damagePoints = 60;
-        int manaCost = 70;
-        damageTarget(enemyCharacter, damagePoints, manaCost);
-    };
+    /** Firestorm spell: 55 dmg, 65 mana */
+    public void fireStorm(Character enemy) {
+        System.out.println(getCharacterName() + " attacks " + enemy.getCharacterName() + " with Firestorm (Damage: 55, Mana: 65)");
+        damageTarget(enemy, 55, 65);
+    }
 
-    public void timeBombAttack(Character enemyCharacter){
-        System.out.println(super.characterName + " attacks" + enemyCharacter.characterName + " with Time Bomb Attack (Damage -60)");
-        int damagePoints = 60;
-        int manaCost = 50;
-        damageTarget(enemyCharacter, damagePoints, manaCost);
-        
-    };
-    
+    /** Time bomb spell: 55 dmg, 45 mana */
+    public void timeBombAttack(Character enemy) {
+        System.out.println(getCharacterName() + " attacks " + enemy.getCharacterName() + " with Time Bomb Attack (Damage: 55, Mana: 45)");
+        damageTarget(enemy, 55, 45);
+    }
 
-    //Health and Mana Regeneration
-    public void healthRejuvenation (){
-        System.out.println(super.characterName + " generated 20% Health Points and Mana");
-        addHealth_Mana();
-    };
+    /** Recover spell: no mana cost */
+    public void healthRejuvenation() {
+        System.out.println(getCharacterName() + " casts Health Rejuvenation.");
+        recover(20, 40);
+    }
 }

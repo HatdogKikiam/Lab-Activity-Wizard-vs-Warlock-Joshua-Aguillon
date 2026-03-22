@@ -1,94 +1,67 @@
+/**
+ * Main battle simulation between Wizard and Warlock.
+ */
 public class App {
-    public static void main(String[] args) throws Exception {
-        System.out.println("Wizards and Warlocks");
-        /**
-         * Create a Wizard Class which Inherits the Properties of Character Class.
-         * eg. Wizard.java
-         * 
-         * 
-         * Create a Warlock Class which Inherits the Properties of Character Class.
-         * eg. Warlock.java
-         * 
-         * Each of the above mentioned Classes should have the following:
-         * 1 - 2 Damage Spells(you are free to name it)
-         * - each method/spell should invoke the damageTarget method from Character
-         * and has its corresponding mana cost and damage points
-         * 2 - 1 Recover spell(you are free to name it) that will increase both HP and Mana Points
-         * 
-         */
+    public static void main(String[] args) {
+        System.out.println("Wizards and Warlocks Battle!");
 
-        /**
-         * Create a Sequence of each Character Created Casting Spells until
-         * one of the Characters Created gets defeated.
-         * 
-         * The sequence should contain the following:
-         * 1 - Damaging the Opposing Character.
-         * 2 - Both Characters will Damage each other.
-         * 3 - At least one of the Characters should cast a "recover" spell that adds HP and MP of the caster.
-         * 4 - "Recover spell" has no Mana Point Cost
-         * 5 - Either the Warlock/Wizard should be defeated at the end of the Sequence.
-         * 6 - The winner will have their level increased by 10 (Create a Method In Character.java that increases level)
-         * 7 - Display the Details of each Character at each "phase/turn" to see the current status of the Characters
-         *      - Create a method to display details for better readability
-         */
+        Wizard zeus = new Wizard("Zeus");
+        Warlock underlord = new Warlock("Underlord");
 
+        zeus.introduce();
+        underlord.introduce();
 
-        /**
-         * Example Sequence
-         * Wizard Merlin = new Wizard("Merlin");
-         * Warlock Saruman = new Warlock("Saruman");
-         * 
-         * Merlin.firestorm(Saruman); // Saruman HP Deducted
-         * Warlock.recover() // Saruman HP and MP increases
-         */
+        System.out.println("\nLet the Battle Begin!\n");
 
-        Wizard Zeus = new Wizard("Zeus");
-        Warlock Underlord = new Warlock("Underlord");
+        // Battle loop: alternate turns until one defeated
+        boolean zeusTurn = true;  // Zeus starts
+        while (zeus.isAlive() && underlord.isAlive()) {
+            Character current = zeusTurn ? zeus : underlord;
+            Character opponent = zeusTurn ? underlord : zeus;
 
-        System.out.println("\nLet the Battle Begin!");
+            System.out.println("\n--- " + current.getCharacterName() + "'s Turn ---");
+            current.displayStatus();
 
-            System.out.println("\nUnderlord's Turn\n");
-            Underlord.Poison(Zeus);//Damages Zeus (-60 Health)
-            
-            //Displaying the Opponent stats
-            System.out.println("\nDisplaying Opponent stats: ");
-            Zeus.displayStatus();
-            
-            
-            System.out.println("\nZeus's Turn\n");
-            Zeus.fireStorm(Underlord);//Damages Underloard (-50 Health)
+            // 80% chance attack, 20% recover (for demo)
+            if (Math.random() < 0.8) {
+                // Attack (choose random spell for variety)
+                if (current instanceof Wizard) {
+                    if (Math.random() < 0.5) {
+                        ((Wizard) current).fireStorm(opponent);
+                    } else {
+                        ((Wizard) current).timeBombAttack(opponent);
+                    }
+                } else {
+                    if (Math.random() < 0.5) {
+                        ((Warlock) current).Poison(opponent);
+                    } else {
+                        ((Warlock) current).attackOverheating(opponent);
+                    }
+                }
+            } else {
+                // Recover
+                if (current instanceof Wizard) {
+                    ((Wizard) current).healthRejuvenation();
+                } else {
+                    ((Warlock) current).healthRejuvenation();
+                }
+            }
 
-            //Displaying the Opponent stats
-            System.out.println("\nDisplaying Opponent stats: ");
-            Underlord.displayStatus();
+            opponent.displayStatus();
+            zeusTurn = !zeusTurn;  // Switch turns
+        }
 
-            System.out.println("\nUnderlord's Turn\n");
-            Underlord.healthRejuvenation(); //Regenerating 15% for Zeus
-            
-            //Displaying the Stats
-            Underlord.displayStatus();
-            
-            System.out.println("\nZeus's Turn\n");
-            Zeus.fireStorm(Underlord);//Damages Underlord (-50 Health) --Underlord has been Defeated
+        // Declare winner and level up
+        if (zeus.isAlive()) {
+            System.out.println("\n*** Victory! " + zeus.getCharacterName() + " wins! ***");
+            zeus.levelUp(10);
+            underlord.displayStatus();
+        } else {
+            System.out.println("\n*** Victory! " + underlord.getCharacterName() + " wins! ***");
+            underlord.levelUp(10);
+            zeus.displayStatus();
+        }
 
-            //Displaying the Opponent stats
-            Underlord.displayStatus();
-
-
-            System.out.println("\nUnderlord's Turn\n");
-            Underlord.Poison(Zeus);//Damages Zeus (-60 Health)
-            
-            //Displaying the Opponent stats
-            System.out.println("\nDisplaying Opponent stats: ");
-            Zeus.displayStatus();
-
-
-        //Displaying Final Characters' Status
-        System.out.println("\nPrinting the Final Status: ");
-        Underlord.displayStatus();
-        Zeus.displayStatus();
-
-        
-
+        System.out.println("Battle Ended.");
     }
 }
